@@ -51,6 +51,7 @@ public class JustTimer {
     private static boolean paused = false;
     private static boolean showing = true;
     private static int stored_time = 0;
+    private static int tare_time = 0;
 
     public String tick2time(int ticks) {
         int seconds = ticks / 20;
@@ -99,6 +100,20 @@ public class JustTimer {
                             return 1;
                         }))
         );
+        event.getDispatcher().register(
+                Commands.literal("justtimer")
+                        .then(Commands.literal("tare").executes(ctx -> {
+                            tare_time = stored_time;
+                            return 1;
+                        }))
+        );
+        event.getDispatcher().register(
+                Commands.literal("justtimer")
+                        .then(Commands.literal("untare").executes(ctx -> {
+                            tare_time = 0;
+                            return 1;
+                        }))
+        );
     }
 
     @SubscribeEvent
@@ -117,7 +132,7 @@ public class JustTimer {
         }
 
         final var gui = event.getGuiGraphics();
-        final var playtime = tick2time(stored_time);
+        final var playtime = tick2time(stored_time - tare_time);
         drawGui(gui, playtime);
     }
 }
